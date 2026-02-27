@@ -114,7 +114,13 @@ class Mind:
         # Evaluate outcome (placeholder reward)
         reward = self.evaluate_outcome(perception, action)
         self.emotion.update(reward)
-        self.development.update(self.ego.personality, perception, action, reward, self.emotion.mood)
+        self.ego.personality = self.development.update(
+            self.ego.personality,
+            perception,
+            action,
+            reward,
+            self.emotion.mood,
+        )
         # Update superego and record memory
         self.superego.update(action, reward)
         self.subconscious.record(perception, sentence, action, reward)

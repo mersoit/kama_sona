@@ -71,12 +71,12 @@ class PersonalityDevelopment:
         action_tokens: List[str],
         reward: float,
         mood: float,
-    ) -> None:
-        """Evolve the supplied personality in place."""
+    ) -> Personality:
+        """Evolve the supplied personality in place and return it."""
         self._ensure_baseline(personality)
         baseline = self.baseline
         if baseline is None:
-            return
+            return personality
 
         novelty = self._calculate_novelty(perception)
         positive = max(reward, 0.0)
@@ -106,3 +106,5 @@ class PersonalityDevelopment:
             baseline_value = getattr(baseline, trait)
             adjusted = current + (self.pace * delta) - (self.pace * self.baseline_pull * (current - baseline_value))
             setattr(personality, trait, _clamp(adjusted))
+
+        return personality
