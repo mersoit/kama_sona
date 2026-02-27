@@ -102,7 +102,6 @@ class Mind:
         self.subconscious = Subconscious()
         self.emotion = Emotion()
         self.superego = Superego()
-        self.personality = personality
         self.ego = EgoModel(grammar=grammar, personality=personality)
         self.development = development or PersonalityDevelopment()
 
@@ -115,7 +114,7 @@ class Mind:
         # Evaluate outcome (placeholder reward)
         reward = self.evaluate_outcome(perception, action)
         self.emotion.update(reward)
-        self.development.update(self.personality, perception, action, reward, self.emotion.mood)
+        self.development.update(self.ego.personality, perception, action, reward, self.emotion.mood)
         # Update superego and record memory
         self.superego.update(action, reward)
         self.subconscious.record(perception, sentence, action, reward)

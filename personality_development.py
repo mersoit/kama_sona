@@ -56,12 +56,39 @@ class PersonalityDevelopment:
         negative = max(-reward, 0.0)
         action_verb = action[0] if action else ""
 
+        action_trait_bias = {
+            "moku": {"openness": 0.2},
+            "lon": {"conscientiousness": 0.1},
+            "tawa": {"extraversion": 0.2},
+        }
+        trait_bias = action_trait_bias.get(action_verb, {})
+
+        novelty_weight = 0.6
+        conscientious_positive = 0.3
+        conscientious_negative = 0.2
+        extraversion_positive = 0.4
+        extraversion_negative = 0.2
+        extraversion_mood = 0.2
+        agreeableness_positive = 0.25
+        agreeableness_negative = 0.1
+        neuroticism_negative = 0.5
+        neuroticism_positive = 0.15
+
         deltas = {
-            "openness": (novelty - 0.5) * 0.6 + (0.2 if action_verb == "moku" else 0.0),
-            "conscientiousness": 0.3 * positive - 0.2 * negative + (0.1 if action_verb == "lon" else 0.0),
-            "extraversion": 0.4 * positive - 0.2 * negative + 0.2 * mood + (0.2 if action_verb == "tawa" else 0.0),
-            "agreeableness": 0.25 * positive - 0.1 * negative,
-            "neuroticism": 0.5 * negative - 0.15 * positive,
+            "openness": (novelty - 0.5) * novelty_weight + trait_bias.get("openness", 0.0),
+            "conscientiousness": (
+                conscientious_positive * positive
+                - conscientious_negative * negative
+                + trait_bias.get("conscientiousness", 0.0)
+            ),
+            "extraversion": (
+                extraversion_positive * positive
+                - extraversion_negative * negative
+                + extraversion_mood * mood
+                + trait_bias.get("extraversion", 0.0)
+            ),
+            "agreeableness": agreeableness_positive * positive - agreeableness_negative * negative,
+            "neuroticism": neuroticism_negative * negative - neuroticism_positive * positive,
         }
 
         for trait, delta in deltas.items():

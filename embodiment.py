@@ -34,7 +34,7 @@ class EnvironmentAdapter:
             return
         verb = action_tokens[0]
         if verb == "tawa":
-            agent.x = min(env.width, agent.x + 5)
+            agent.x = min(env.width - agent.radius, agent.x + 5)
         elif verb == "lon":
             pass
         elif verb == "moku":
