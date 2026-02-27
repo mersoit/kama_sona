@@ -5,8 +5,8 @@ implements a layered artificial agent inspired by the design
 outlined in the accompanying research report.  The agent inhabits a
 simple 2D world and communicates in **Toki Pona**, a minimalist
 constructed language.  Its cognitive architecture is divided into a
-**subconscious**, **ego**, **superego**, and includes a
-**universal-grammar component** and a **Big Five personality**.
+**subconscious**, **ego**, **superego**, a **universal-grammar component**,
+and a **Big Five personality model**.
 
 ## Features
 
