@@ -32,7 +32,8 @@ class EnvironmentAdapter:
         }
 
     def _clamp_position(self, position: float, radius: float, boundary: float) -> float:
-        return max(radius, min(boundary - radius, position))
+        radius_value = float(radius)
+        return max(radius_value, min(boundary - radius_value, position))
 
     def apply_action(self, env: "Environment", agent: "Agent", action_tokens: List[str]) -> None:
         if not action_tokens:

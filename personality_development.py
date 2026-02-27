@@ -31,6 +31,7 @@ class PersonalityDevelopment:
     baseline_pull: float = 0.15
     baseline: Optional[Personality] = None
     novelty_threshold: float = 5.0
+    novelty_center: float = 0.5
     novelty_weight: float = 0.6
     conscientious_positive: float = 0.3
     conscientious_negative: float = 0.2
@@ -85,7 +86,7 @@ class PersonalityDevelopment:
         trait_bias = self.action_trait_bias.get(action_verb, {}) if action_verb else {}
 
         deltas = {
-            "openness": (novelty - 0.5) * self.novelty_weight + trait_bias.get("openness", 0.0),
+            "openness": (novelty - self.novelty_center) * self.novelty_weight + trait_bias.get("openness", 0.0),
             "conscientiousness": (
                 self.conscientious_positive * positive
                 - self.conscientious_negative * negative
