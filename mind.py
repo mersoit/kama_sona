@@ -15,6 +15,7 @@ from typing import List, Tuple, Any
 
 from grammar import TokiPonaGrammar
 from personality import Personality
+from emotion import Emotion
 
 
 class Subconscious:
@@ -72,16 +73,13 @@ class EgoModel:
             ["lon"],
             ["moku"],
         ]
-
-    def generate(self, latent_state: Any, norms: dict[str, float]) -> Tuple[List[str], List[str]]:
-        """Generate a sentence and an associated action.
-
-        This placeholder implementation selects an action based on
+    def generate(self, latent_state: Any, norms: dict[str, float], mood: float) -> Tuple[List[str], List[str]]:
+        """Generate a sentence and an associated action. placeholder implementation selects an action based on
         personality, constructs a simple sentence describing the
         action, and returns both.
         """
         # Choose an action candidate using personality bias
-        action = self.personality.influence_action(self.action_candidates)
+                action = self.personality.influence_action(self.action_candidates, mood)
         # Generate a simple declarative sentence: subject verb [object]
         subject = "mi"
         verb = action[0] if action else "lon"
@@ -96,16 +94,19 @@ class Mind:
 
     def __init__(self, grammar: TokiPonaGrammar, personality: Personality) -> None:
         self.subconscious = Subconscious()
+                self.emotion = Emotion()
         self.superego = Superego()
         self.ego = EgoModel(grammar=grammar, personality=personality)
 
     def decide(self, perception: dict) -> Tuple[List[str], List[str]]:
-        """Given a perception, produce a Toki Pona sentence and an action."""
+                """Given a perception, produce a Toki Pona sentence and an action."""
+                
         latent_state = self.subconscious.process(perception)
-        norms = self.superego.get_norms()
-        sentence, action = self.ego.generate(latent_state, norms)
+                norms = self.superego.get_norms()
+                sentence, action = self.ego.generate(latent_state, norms, self.emotion.mood)
         # Evaluate outcome (placeholder reward)
         reward = self.evaluate_outcome(perception, action)
+                self.emotion.update(reward)
         # Update superego and record memory
         self.superego.update(action, reward)
         self.subconscious.record(perception, sentence, action, reward)
