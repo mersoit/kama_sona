@@ -26,7 +26,8 @@ and a **Big Five personality model**.
   canonicalises sentences to prevent ungrammatical output.
 - **Personality**: The `personality.py` module stores the Big Five
   personality traits【321794716508073†L346-L355】 and biases action
-  selection.
+  selection. The default influence is intentionally lightweight and can
+  be extended.
 - **Personality Development**: The `personality_development.py` module
   evolves traits at a slow, human-like pace while anchoring the agent's
   baseline temperament so uniqueness persists across environments.
