@@ -11,10 +11,11 @@ utterances.
 from __future__ import annotations
 
 import random
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Optional
 
 from grammar import TokiPonaGrammar
 from personality import Personality
+from personality_development import PersonalityDevelopment
 from emotion import Emotion
 
 
@@ -79,7 +80,7 @@ class EgoModel:
         action, and returns both.
         """
         # Choose an action candidate using personality bias
-                action = self.personality.influence_action(self.action_candidates, mood)
+        action = self.personality.influence_action(self.action_candidates, mood)
         # Generate a simple declarative sentence: subject verb [object]
         subject = "mi"
         verb = action[0] if action else "lon"
@@ -92,21 +93,34 @@ class EgoModel:
 class Mind:
     """Composite mind that coordinates subconscious, superego and ego."""
 
-    def __init__(self, grammar: TokiPonaGrammar, personality: Personality) -> None:
+    def __init__(
+        self,
+        grammar: TokiPonaGrammar,
+        personality: Personality,
+        development: Optional[PersonalityDevelopment] = None,
+    ) -> None:
         self.subconscious = Subconscious()
-                self.emotion = Emotion()
+        self.emotion = Emotion()
         self.superego = Superego()
         self.ego = EgoModel(grammar=grammar, personality=personality)
+        self.development = development or PersonalityDevelopment()
 
     def decide(self, perception: dict) -> Tuple[List[str], List[str]]:
-                """Given a perception, produce a Toki Pona sentence and an action."""
-                
+        """Given a perception, produce a Toki Pona sentence and an action."""
+
         latent_state = self.subconscious.process(perception)
-                norms = self.superego.get_norms()
-                sentence, action = self.ego.generate(latent_state, norms, self.emotion.mood)
+        norms = self.superego.get_norms()
+        sentence, action = self.ego.generate(latent_state, norms, self.emotion.mood)
         # Evaluate outcome (placeholder reward)
         reward = self.evaluate_outcome(perception, action)
-                self.emotion.update(reward)
+        self.emotion.update(reward)
+        self.ego.personality = self.development.update(
+            self.ego.personality,
+            perception,
+            action,
+            reward,
+            self.emotion.mood,
+        )
         # Update superego and record memory
         self.superego.update(action, reward)
         self.subconscious.record(perception, sentence, action, reward)
