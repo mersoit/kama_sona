@@ -31,11 +31,14 @@ class EnvironmentAdapter:
             "sunlight": env.sunlight,
         }
 
+    def _clamp_position(self, position: float, radius: float, boundary: float) -> float:
+        return max(radius, min(boundary - radius, position))
+
     def apply_action(self, env: "Environment", agent: "Agent", action_tokens: List[str]) -> None:
         if not action_tokens:
             return
         verb = action_tokens[0]
         if verb == "tawa":
-            agent.x = max(agent.radius, min(env.width - agent.radius, agent.x + self.step_size))
+            agent.x = self._clamp_position(agent.x + self.step_size, agent.radius, env.width)
         elif verb == "lon":
             pass

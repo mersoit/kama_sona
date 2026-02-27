@@ -21,7 +21,11 @@ def _clamp(value: float, minimum: float = 0.0, maximum: float = 1.0) -> float:
 
 @dataclass
 class PersonalityDevelopment:
-    """Gradually adjust personality traits based on lived experience."""
+    """Gradually adjust personality traits based on lived experience.
+
+    The action-to-trait bias map nudges traits based on the agent's
+    expressed verbs (e.g., "tawa" encourages extraversion).
+    """
 
     pace: float = 0.02
     baseline_pull: float = 0.15
@@ -55,6 +59,11 @@ class PersonalityDevelopment:
                 neuroticism=personality.neuroticism,
             )
 
+    def _calculate_novelty(self, perception: dict) -> float:
+        if self.novelty_threshold <= 0:
+            return 0.0
+        return min(1.0, len(perception.get("objects", [])) / self.novelty_threshold)
+
     def update(
         self,
         personality: Personality,
@@ -62,17 +71,14 @@ class PersonalityDevelopment:
         action_tokens: List[str],
         reward: float,
         mood: float,
-    ) -> Personality:
-        """Evolve the supplied personality in place and return it."""
+    ) -> None:
+        """Evolve the supplied personality in place."""
         self._ensure_baseline(personality)
         baseline = self.baseline
         if baseline is None:
-            return personality
+            return
 
-        if self.novelty_threshold <= 0:
-            novelty = 0.0
-        else:
-            novelty = min(1.0, len(perception.get("objects", [])) / self.novelty_threshold)
+        novelty = self._calculate_novelty(perception)
         positive = max(reward, 0.0)
         negative = max(-reward, 0.0)
         action_verb = action_tokens[0] if action_tokens else None
@@ -100,5 +106,3 @@ class PersonalityDevelopment:
             baseline_value = getattr(baseline, trait)
             adjusted = current + (self.pace * delta) - (self.pace * self.baseline_pull * (current - baseline_value))
             setattr(personality, trait, _clamp(adjusted))
-
-        return personality
