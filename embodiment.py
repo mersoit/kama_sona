@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 class EnvironmentAdapter:
     """Default adapter for the built-in 2D environment."""
 
+    step_size: float = 5.0
+
     def perceive(self, env: "Environment", agent: "Agent") -> dict:
         objects_state = [obj.get_state() for obj in env.objects]
         return {
@@ -34,8 +36,6 @@ class EnvironmentAdapter:
             return
         verb = action_tokens[0]
         if verb == "tawa":
-            agent.x = max(agent.radius, min(env.width - agent.radius, agent.x + 5))
+            agent.x = max(agent.radius, min(env.width - agent.radius, agent.x + self.step_size))
         elif verb == "lon":
-            pass
-        elif verb == "moku":
             pass

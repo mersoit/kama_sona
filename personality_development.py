@@ -26,6 +26,7 @@ class PersonalityDevelopment:
     pace: float = 0.02
     baseline_pull: float = 0.15
     baseline: Optional[Personality] = None
+    novelty_threshold: float = 5.0
     novelty_weight: float = 0.6
     conscientious_positive: float = 0.3
     conscientious_negative: float = 0.2
@@ -68,11 +69,14 @@ class PersonalityDevelopment:
         if baseline is None:
             return personality
 
-        novelty = min(1.0, len(perception.get("objects", [])) / 5.0)
+        if self.novelty_threshold <= 0:
+            novelty = 0.0
+        else:
+            novelty = min(1.0, len(perception.get("objects", [])) / self.novelty_threshold)
         positive = max(reward, 0.0)
         negative = max(-reward, 0.0)
-        action_verb = action_tokens[0] if action_tokens else ""
-        trait_bias = self.action_trait_bias.get(action_verb, {})
+        action_verb = action_tokens[0] if action_tokens else None
+        trait_bias = self.action_trait_bias.get(action_verb, {}) if action_verb else {}
 
         deltas = {
             "openness": (novelty - 0.5) * self.novelty_weight + trait_bias.get("openness", 0.0),
