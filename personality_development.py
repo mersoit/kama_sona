@@ -9,7 +9,7 @@ each agent's unique baseline temperament.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Optional
 
 from personality import Personality
@@ -26,6 +26,23 @@ class PersonalityDevelopment:
     pace: float = 0.02
     baseline_pull: float = 0.15
     baseline: Optional[Personality] = None
+    novelty_weight: float = 0.6
+    conscientious_positive: float = 0.3
+    conscientious_negative: float = 0.2
+    extraversion_positive: float = 0.4
+    extraversion_negative: float = 0.2
+    extraversion_mood: float = 0.2
+    agreeableness_positive: float = 0.25
+    agreeableness_negative: float = 0.1
+    neuroticism_negative: float = 0.5
+    neuroticism_positive: float = 0.15
+    action_trait_bias: dict[str, dict[str, float]] = field(
+        default_factory=lambda: {
+            "moku": {"openness": 0.2},
+            "lon": {"conscientiousness": 0.1},
+            "tawa": {"extraversion": 0.2},
+        }
+    )
 
     def _ensure_baseline(self, personality: Personality) -> None:
         if self.baseline is None:
@@ -41,7 +58,7 @@ class PersonalityDevelopment:
         self,
         personality: Personality,
         perception: dict,
-        action: List[str],
+        action_tokens: List[str],
         reward: float,
         mood: float,
     ) -> Personality:
@@ -54,41 +71,24 @@ class PersonalityDevelopment:
         novelty = min(1.0, len(perception.get("objects", [])) / 5.0)
         positive = max(reward, 0.0)
         negative = max(-reward, 0.0)
-        action_verb = action[0] if action else ""
-
-        action_trait_bias = {
-            "moku": {"openness": 0.2},
-            "lon": {"conscientiousness": 0.1},
-            "tawa": {"extraversion": 0.2},
-        }
-        trait_bias = action_trait_bias.get(action_verb, {})
-
-        novelty_weight = 0.6
-        conscientious_positive = 0.3
-        conscientious_negative = 0.2
-        extraversion_positive = 0.4
-        extraversion_negative = 0.2
-        extraversion_mood = 0.2
-        agreeableness_positive = 0.25
-        agreeableness_negative = 0.1
-        neuroticism_negative = 0.5
-        neuroticism_positive = 0.15
+        action_verb = action_tokens[0] if action_tokens else ""
+        trait_bias = self.action_trait_bias.get(action_verb, {})
 
         deltas = {
-            "openness": (novelty - 0.5) * novelty_weight + trait_bias.get("openness", 0.0),
+            "openness": (novelty - 0.5) * self.novelty_weight + trait_bias.get("openness", 0.0),
             "conscientiousness": (
-                conscientious_positive * positive
-                - conscientious_negative * negative
+                self.conscientious_positive * positive
+                - self.conscientious_negative * negative
                 + trait_bias.get("conscientiousness", 0.0)
             ),
             "extraversion": (
-                extraversion_positive * positive
-                - extraversion_negative * negative
-                + extraversion_mood * mood
+                self.extraversion_positive * positive
+                - self.extraversion_negative * negative
+                + self.extraversion_mood * mood
                 + trait_bias.get("extraversion", 0.0)
             ),
-            "agreeableness": agreeableness_positive * positive - agreeableness_negative * negative,
-            "neuroticism": neuroticism_negative * negative - neuroticism_positive * positive,
+            "agreeableness": self.agreeableness_positive * positive - self.agreeableness_negative * negative,
+            "neuroticism": self.neuroticism_negative * negative - self.neuroticism_positive * positive,
         }
 
         for trait, delta in deltas.items():
