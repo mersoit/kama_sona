@@ -21,7 +21,7 @@ from embodiment import EnvironmentAdapter
 class Agent:
     """Embodied agent with a mind in a 2D environment."""
 
-    def __init__(self, env: Environment, mind: Mind, adapter: EnvironmentAdapter | None = None) -> None:
+    def __init__(self, env: Environment, mind: Mind, adapter: Optional[EnvironmentAdapter] = None) -> None:
         self.env = env
         self.mind = mind
         self.adapter = adapter or EnvironmentAdapter()

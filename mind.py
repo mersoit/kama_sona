@@ -11,7 +11,7 @@ utterances.
 from __future__ import annotations
 
 import random
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Optional
 
 from grammar import TokiPonaGrammar
 from personality import Personality
@@ -97,7 +97,7 @@ class Mind:
         self,
         grammar: TokiPonaGrammar,
         personality: Personality,
-        development: PersonalityDevelopment | None = None,
+        development: Optional[PersonalityDevelopment] = None,
     ) -> None:
         self.subconscious = Subconscious()
         self.emotion = Emotion()
