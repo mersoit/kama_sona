@@ -1,12 +1,13 @@
-# Kama Sona
+ 
+- # Kama Sona
 
 This repository contains a **proof‑of‑concept simulation game** that
 implements a layered artificial agent inspired by the design
 outlined in the accompanying research report.  The agent inhabits a
 simple 2D world and communicates in **Toki Pona**, a minimalist
 constructed language.  Its cognitive architecture is divided into a
-**subconscious**, **ego**, **superego**, and includes a
-**universal‑grammar component** and a **Big Five personality**.
+
+ Its cognitive architecture is divided into a **subconscious**, **ego**, **superego**, and includes a **universal-grammar component** and a **Big Five personality**.
 
 ## Features
 
@@ -26,7 +27,10 @@ constructed language.  Its cognitive architecture is divided into a
   canonicalises sentences to prevent ungrammatical output.
 - **Personality**: The `personality.py` module stores the Big Five
   personality traits【321794716508073†L346-L355】 and biases action
-  selection.  Currently the influence is simple but can be extended.
+  selection.  Currently the influence is sim
+  ple but can be exte
+
+    - **Emotion Module**: The `emotion.py` module tracks the agent's mood, updating it based on rewards and clamping values between -1 and 1, and influences action selection.
 
 ## Getting Started
 
@@ -70,8 +74,9 @@ enhancements could include:
 - A transformer‑based Ego layer that uses the grammar as a filter.
 - Sophisticated personality‑based decision making reflecting the
   Big Five traits【321794716508073†L346-L355】.
-- Additional senses (vision, touch) and objects to interact with.
-- A chat interface allowing the user to talk to the agent in Toki Pona
-  and influence its behaviour.
+-  - A chat interface allowing the user to talk to the agent in Toki Pona and influence its behaviour.
+  - Cross-platform portability: port the game to web and mobile platforms (e.g., using Kivy or Pyodide) so the agent can run in diverse environments.
+  - Richer emotion modelling: extend the emotion system to represent a range of moods and affective states, enabling more nuanced and human-like responses.
 
-Contributions and experiments are welcome.
+
+
